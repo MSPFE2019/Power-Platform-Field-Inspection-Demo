@@ -1,0 +1,15 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Create new field issue
+        triggerQueries:
+          - Create a new issue
+          - Report a field problem
+  actions:
+    - kind: Question
+      property: Topic.Description
+      prompt: Describe the issue, location, county, and agency if known.
+    - kind: SendActivity
+      activity: "I can start the report, but photo capture and GPS confirmation should be completed in the mobile Field Inspection app before submission."

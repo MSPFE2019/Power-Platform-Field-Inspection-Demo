@@ -1,0 +1,8 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": { "sharePointSiteUrl": { "type": "String", "defaultValue": "https://<YOUR-TENANT>.sharepoint.com/sites/FieldInspectionDemo" } },
+  "triggers": { "Recurrence": { "type": "Recurrence", "recurrence": { "frequency": "Day", "interval": 1, "schedule": { "hours": [7], "minutes": [30] } } } },
+  "actions": { "Get_open_issues": { "type": "OpenApiConnection", "inputs": { "host": { "connectionName": "shared_sharepointonline", "operationId": "GetItems", "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline" }, "parameters": { "dataset": "@parameters('sharePointSiteUrl')", "table": "FieldIssues", "$filter": "Status ne 'Resolved' and Status ne 'Rejected'" } } }, "Compose_digest": { "type": "Compose", "runAfter": { "Get_open_issues": ["Succeeded"] }, "inputs": "@concat('Open issues: ', length(body('Get_open_issues')?['value']), '\nCritical open: ', length(filter(body('Get_open_issues')?['value'], equals(item()?['Severity'], 'Critical'))))" }, "Send_digest": { "type": "OpenApiConnection", "runAfter": { "Compose_digest": ["Succeeded"] }, "inputs": { "host": { "connectionName": "shared_office365", "operationId": "SendEmailV2", "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365" }, "parameters": { "emailMessage/To": "leadership@<YOUR-TENANT>.onmicrosoft.com", "emailMessage/Subject": "Daily field issue digest", "emailMessage/Body": "@outputs('Compose_digest')" } } } },
+  "outputs": {}
+}

@@ -1,0 +1,25 @@
+MyReportsScreen:
+  OnVisible: |
+    =Refresh(FieldIssues)
+  Controls:
+    ReportsGallery:
+      Items: |
+        =SortByColumns(Filter(FieldIssues, ReportedBy.Email = User().Email || IsBlank(ReportedBy.Email)), "ReportedDate", SortOrder.Descending)
+      AccessibleLabel: |
+        ="My field reports"
+      TemplateFill: |
+        =If(ThisItem.Severity = "Critical", ColorValue("#FDE7E9"), Color.White)
+      OnSelect: |
+        =Set(varSelectedIssue, ThisItem); Navigate(IssueDetailScreen, ScreenTransition.Cover)
+    StatusChip:
+      Text: |
+        =ThisItem.Status
+      Fill: |
+        =Switch(ThisItem.Status, "Resolved", ColorValue("#DFF6DD"), "Rejected", ColorValue("#FDE7E9"), "In Progress", ColorValue("#FFF4CE"), ColorValue("#E1DFDD"))
+      AccessibleLabel: |
+        ="Status " & ThisItem.Status
+    BackButton:
+      Text: |
+        ="Back"
+      OnSelect: |
+        =Navigate(HomeScreen, ScreenTransition.UnCover)

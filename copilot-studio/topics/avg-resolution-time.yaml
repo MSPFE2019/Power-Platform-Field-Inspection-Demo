@@ -1,0 +1,17 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Average resolution time
+        triggerQueries:
+          - What is average resolution time by county?
+          - Average resolution time by agency
+  actions:
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: averageResolutionTime
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Average resolution time uses resolved items only: DateDiff(ReportedDate, ResolvedDate) grouped by county or agency."

@@ -1,0 +1,22 @@
+ConfirmationScreen:
+  OnVisible: |
+    If(Connection.Connected && CountRows(colOfflineIssues) > 0,
+      ForAll(colOfflineIssues,
+        IfError(Patch(FieldIssues, Defaults(FieldIssues), DropColumns(ThisRecord, LocalPhoto, LocalQueuedOn)), false)
+      );
+      Clear(colOfflineIssues); SaveData(colOfflineIssues, "offlineIssues"); Notify("Offline reports synced.", NotificationType.Success)
+    )
+  Controls:
+    ConfirmationLabel:
+      Text: |
+        =If(Connection.Connected, "Report submitted", "Report saved offline")
+      AccessibleLabel: |
+        =Self.Text
+    ConfirmationBody:
+      Text: |
+        ="AI analysis and agency routing will start automatically."
+    HomeButton:
+      Text: |
+        ="Back to home"
+      OnSelect: |
+        =Navigate(HomeScreen, ScreenTransition.Fade)

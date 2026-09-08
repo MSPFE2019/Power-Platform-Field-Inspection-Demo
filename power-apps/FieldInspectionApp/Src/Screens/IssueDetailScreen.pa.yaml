@@ -1,0 +1,25 @@
+IssueDetailScreen:
+  Controls:
+    TitleLabel:
+      Text: |
+        =varSelectedIssue.IssueID & " - " & varSelectedIssue.IssueType
+      AccessibleLabel: |
+        =Self.Text
+    DetailBody:
+      Text: |
+        =varSelectedIssue.Description & Char(10) & "AI: " & varSelectedIssue.AIAnalysis
+    SeverityLabel:
+      Text: |
+        ="Severity: " & varSelectedIssue.Severity & " / " & varSelectedIssue.RecommendedPriority
+      Color: |
+        =If(varSelectedIssue.Severity = "Critical", ColorValue("#A80000"), ColorValue("#323130"))
+    MapButton:
+      Text: |
+        ="Open map"
+      OnSelect: |
+        =Launch("https://www.google.com/maps?q=" & Text(varSelectedIssue.Latitude) & "," & Text(varSelectedIssue.Longitude))
+    BackButton:
+      Text: |
+        ="Back to reports"
+      OnSelect: |
+        =Navigate(MyReportsScreen, ScreenTransition.UnCover)

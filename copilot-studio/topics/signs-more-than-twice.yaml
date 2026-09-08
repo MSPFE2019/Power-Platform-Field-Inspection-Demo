@@ -1,0 +1,18 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Road signs reported more than twice this year
+        triggerQueries:
+          - Which signs have been reported more than twice this year?
+          - Signs with more than two reports this year
+  actions:
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: signsMoreThanTwiceThisYear
+        assetType: Road Sign
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Road sign recurrence uses IssueType = Road Sign, ReportedDate in the current year, grouped by AssetID with count > 2. Seeded results include SIGN-001, SIGN-011, and SIGN-021."

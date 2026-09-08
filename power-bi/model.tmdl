@@ -1,0 +1,23 @@
+model FieldInspectionDemo
+	culture: en-US
+	table FieldIssues
+		column IssueID
+			dataType: string
+		column IssueType
+			dataType: string
+		column County
+			dataType: string
+		column Agency
+			dataType: string
+		column Status
+			dataType: string
+		column Severity
+			dataType: string
+		column ReportedDate
+			dataType: dateTime
+		column ResolvedDate
+			dataType: dateTime
+		column EstimatedCost
+			dataType: decimal
+		measure 'Open Issues' = CALCULATE(COUNTROWS(FieldIssues), NOT FieldIssues[Status] IN { "Resolved", "Rejected" })
+		measure 'Critical Open' = CALCULATE([Open Issues], FieldIssues[Severity] = "Critical")

@@ -1,0 +1,91 @@
+NewIssueScreen:
+  Fill: ColorValue("#FFFFFF")
+  OnVisible: |
+    Set(varCapturedPhoto, Blank());
+    Set(varLat, Location.Latitude);
+    Set(varLong, Location.Longitude);
+    Set(varAddress, "GPS " & Text(varLat, "[$-en-US]0.000000") & ", " & Text(varLong, "[$-en-US]0.000000"));
+    Reset(ddIssueType); Reset(ddCounty); Reset(ddAgency); Reset(txtDescription)
+  Controls:
+    Camera1:
+      AccessibleLabel: |
+        ="Camera preview for field issue photo"
+      OnSelect: |
+        Set(varCapturedPhoto, Camera1.Photo);
+        Notify("Photo captured. Retake if needed.", NotificationType.Success)
+    CapturedImage:
+      Image: |
+        =varCapturedPhoto
+      AccessibleLabel: |
+        ="Captured issue photo preview"
+    RetakeButton:
+      Text: |
+        ="Retake photo"
+      OnSelect: |
+        =Set(varCapturedPhoto, Blank()); Notify("Ready to retake photo.", NotificationType.Information)
+    ddIssueType:
+      Items: |
+        =colIssueTypes
+      AccessibleLabel: |
+        ="Issue type"
+    ddCounty:
+      Items: |
+        =colCounties
+      AccessibleLabel: |
+        ="County"
+    ddAgency:
+      Items: |
+        =colAgencies
+      AccessibleLabel: |
+        ="Owning agency"
+    txtDescription:
+      HintText: |
+        ="Describe what you see and any safety concerns"
+      Mode: |
+        =TextMode.MultiLine
+      AccessibleLabel: |
+        ="Issue description"
+    LocationLabel:
+      Text: |
+        =varAddress
+      AccessibleLabel: |
+        ="Captured GPS location " & varAddress
+    SubmitButton:
+      Text: |
+        ="Submit report"
+      DisplayMode: |
+        =If(IsBlank(varCapturedPhoto) || IsBlank(ddIssueType.Selected.Value) || IsBlank(ddCounty.Selected.Value) || IsBlank(ddAgency.Selected.Value) || Len(Trim(txtDescription.Text)) < 10, DisplayMode.Disabled, DisplayMode.Edit)
+      OnSelect: |
+        Set(varPayload,
+          {
+            Title: ddIssueType.Selected.Value & " - " & Text(Now(), "yyyymmdd-hhmmss"),
+            IssueType: ddIssueType.Selected.Value,
+            Description: txtDescription.Text,
+            PhotoUrl: "pending-upload://" & GUID(),
+            Latitude: Round(Location.Latitude, 6),
+            Longitude: Round(Location.Longitude, 6),
+            LocationAddress: varAddress,
+            County: ddCounty.Selected.Value,
+            City: If(ddCounty.Selected.Value = "Multnomah", "Portland", "Unknown"),
+            Agency: ddAgency.Selected.Value,
+            ReportedDate: Now(),
+            Severity: "Medium",
+            RecommendedPriority: "P3",
+            Status: "New",
+            AssetID: Blank()
+          }
+        );
+        If(Connection.Connected,
+          IfError(
+            Set(varSubmittedIssue, Patch(FieldIssues, Defaults(FieldIssues), varPayload));
+            Collect(colIssuePhotos, {IssueItemId: varSubmittedIssue.ID, Photo: varCapturedPhoto});
+            Notify("Report submitted for AI analysis.", NotificationType.Success);
+            Navigate(ConfirmationScreen, ScreenTransition.Cover),
+            Notify("Submit failed. Saved offline so you can retry.", NotificationType.Error);
+            Collect(colOfflineIssues, Patch(varPayload, {LocalPhoto: varCapturedPhoto, LocalQueuedOn: Now()})); SaveData(colOfflineIssues, "offlineIssues")
+          ),
+          Collect(colOfflineIssues, Patch(varPayload, {LocalPhoto: varCapturedPhoto, LocalQueuedOn: Now()}));
+          SaveData(colOfflineIssues, "offlineIssues");
+          Notify("Offline: report saved locally and will sync when connected.", NotificationType.Warning);
+          Navigate(ConfirmationScreen, ScreenTransition.Cover)
+        )

@@ -1,0 +1,15 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Escalate issue
+        triggerQueries:
+          - Escalate an issue
+          - Escalate FI-00001
+  actions:
+    - kind: Question
+      property: Topic.IssueID
+      prompt: Which IssueID should be escalated?
+    - kind: SendActivity
+      activity: "I will mark {Topic.IssueID} for CriticalIssueEscalation. The escalation flow posts to Teams and notifies the on-call owner."

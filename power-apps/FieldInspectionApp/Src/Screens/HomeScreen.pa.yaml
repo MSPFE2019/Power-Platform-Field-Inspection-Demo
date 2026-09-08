@@ -1,0 +1,38 @@
+HomeScreen:
+  Fill: ColorValue("#F6F8FA")
+  OnVisible: |
+    Set(varMyReportsCount, CountRows(Filter(FieldIssues, ReportedBy.Email = User().Email && Status <> "Resolved")));
+    If(Connection.Connected && CountRows(colOfflineIssues) > 0, Navigate(ConfirmationScreen))
+  Controls:
+    HeaderLabel:
+      Text: |
+        =varAppName
+      Color: |
+        =Color.White
+      Fill: |
+        =varBrandColor
+      FontWeight: |
+        =FontWeight.Semibold
+      AccessibleLabel: |
+        ="Oregon Field Inspection home"
+    MyReportsCountLabel:
+      Text: |
+        ="My open reports: " & Text(varMyReportsCount)
+      AccessibleLabel: |
+        ="My open reports count is " & Text(varMyReportsCount)
+    NewReportButton:
+      Text: |
+        ="New field report"
+      Fill: |
+        =varAccentColor
+      Color: |
+        =Color.White
+      AccessibleLabel: |
+        ="Create a new field inspection report"
+      OnSelect: |
+        =NewForm(EditForm1); Navigate(NewIssueScreen, ScreenTransition.Cover)
+    MyReportsButton:
+      Text: |
+        ="My reports"
+      OnSelect: |
+        =Refresh(FieldIssues); Navigate(MyReportsScreen, ScreenTransition.Fade)

@@ -1,0 +1,17 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Recurring maintenance requests
+        triggerQueries:
+          - Which locations have recurring maintenance requests?
+          - Show recurring maintenance locations
+  actions:
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: recurringLocations
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Recurring locations use group by LocationAddress/coordinate bucket with count >= 3 in trailing 12 months. Seeded examples include the Portland park location at 45.516800,-122.676900 and water location at 45.519900,-122.681500."

@@ -1,0 +1,18 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Show critical issues in Portland
+        triggerQueries:
+          - Show all critical issues in Portland.
+          - Critical Portland issues
+  actions:
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: criticalInPortland
+        city: Portland
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Critical open Portland issues use filter City = Portland, Severity = Critical, Status not in Resolved/Rejected. Sample seeded result: FI-00001, FI-00002, FI-00003, FI-00004 near Portland sign assets."

@@ -1,0 +1,21 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Issue status lookup
+        triggerQueries:
+          - What is the status of FI-00001?
+          - Look up issue status
+  actions:
+    - kind: Question
+      property: Topic.IssueID
+      prompt: What IssueID should I look up?
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: statusLookup
+        issueId: =Topic.IssueID
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Here is the current SharePoint status and latest AI recommendation for {Topic.IssueID}."

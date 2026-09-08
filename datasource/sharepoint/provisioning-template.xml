@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2022/09/ProvisioningSchema">
+  <pnp:Preferences Generator="FieldInspectionDemoKit" />
+  <pnp:Templates ID="FieldInspectionDemoTemplates">
+    <pnp:ProvisioningTemplate ID="FieldInspectionDemo" Version="1" Scope="RootSite">
+      <pnp:Lists>
+        <pnp:ListInstance Title="FieldIssues" TemplateType="100" Url="Lists/FieldIssues" EnableAttachments="true" OnQuickLaunch="true">
+          <pnp:Fields>
+            <Field Type="Calculated" ResultType="Text" DisplayName="IssueID" Name="IssueID" StaticName="IssueID"><Formula>=&quot;FI-&quot;&amp;TEXT(ID,&quot;00000&quot;)</Formula><FieldRefs><FieldRef Name="ID" /></FieldRefs></Field>
+            <Field Type="Choice" DisplayName="IssueType" Name="IssueType" Required="TRUE"><CHOICES><CHOICE>Road Sign</CHOICE><CHOICE>Water Leak</CHOICE><CHOICE>Park Maintenance</CHOICE><CHOICE>Building Inspection</CHOICE><CHOICE>Facilities</CHOICE></CHOICES></Field>
+            <Field Type="Note" DisplayName="Description" Name="Description" Required="TRUE" RichText="FALSE" />
+            <Field Type="Text" DisplayName="PhotoUrl" Name="PhotoUrl" />
+            <Field Type="Number" DisplayName="Latitude" Name="Latitude" Required="TRUE" Decimals="6" />
+            <Field Type="Number" DisplayName="Longitude" Name="Longitude" Required="TRUE" Decimals="6" />
+            <Field Type="Text" DisplayName="LocationAddress" Name="LocationAddress" />
+            <Field Type="Choice" DisplayName="County" Name="County" Required="TRUE"><CHOICES><CHOICE>Multnomah</CHOICE><CHOICE>Washington</CHOICE><CHOICE>Clackamas</CHOICE><CHOICE>Marion</CHOICE><CHOICE>Lane</CHOICE><CHOICE>Deschutes</CHOICE></CHOICES></Field>
+            <Field Type="Text" DisplayName="City" Name="City" Required="TRUE" />
+            <Field Type="Choice" DisplayName="Agency" Name="Agency" Required="TRUE"><CHOICES><CHOICE>ODOT</CHOICE><CHOICE>Parks &amp; Rec</CHOICE><CHOICE>Public Works</CHOICE><CHOICE>Facilities Mgmt</CHOICE><CHOICE>Water Bureau</CHOICE></CHOICES></Field>
+            <Field Type="User" DisplayName="ReportedBy" Name="ReportedBy" UserSelectionMode="PeopleOnly" />
+            <Field Type="DateTime" DisplayName="ReportedDate" Name="ReportedDate" Required="TRUE" Format="DateTime" />
+            <Field Type="Note" DisplayName="AIAnalysis" Name="AIAnalysis" RichText="FALSE" />
+            <Field Type="Note" DisplayName="AIDetectedConditions" Name="AIDetectedConditions" RichText="FALSE" />
+            <Field Type="Choice" DisplayName="Severity" Name="Severity" Required="TRUE"><CHOICES><CHOICE>Critical</CHOICE><CHOICE>High</CHOICE><CHOICE>Medium</CHOICE><CHOICE>Low</CHOICE></CHOICES></Field>
+            <Field Type="Choice" DisplayName="RecommendedPriority" Name="RecommendedPriority" Required="TRUE"><CHOICES><CHOICE>P1</CHOICE><CHOICE>P2</CHOICE><CHOICE>P3</CHOICE><CHOICE>P4</CHOICE></CHOICES></Field>
+            <Field Type="Note" DisplayName="RecommendedAction" Name="RecommendedAction" RichText="FALSE" />
+            <Field Type="Number" DisplayName="AIConfidence" Name="AIConfidence" Min="0" Max="100" Decimals="0" />
+            <Field Type="Choice" DisplayName="Status" Name="Status" Required="TRUE"><CHOICES><CHOICE>New</CHOICE><CHOICE>AI Analyzed</CHOICE><CHOICE>Pending Approval</CHOICE><CHOICE>Approved</CHOICE><CHOICE>Assigned</CHOICE><CHOICE>In Progress</CHOICE><CHOICE>Resolved</CHOICE><CHOICE>Rejected</CHOICE></CHOICES></Field>
+            <Field Type="User" DisplayName="AssignedTo" Name="AssignedTo" UserSelectionMode="PeopleOnly" />
+            <Field Type="User" DisplayName="ApprovedBy" Name="ApprovedBy" UserSelectionMode="PeopleOnly" />
+            <Field Type="DateTime" DisplayName="ApprovalDate" Name="ApprovalDate" Format="DateTime" />
+            <Field Type="DateTime" DisplayName="ResolvedDate" Name="ResolvedDate" Format="DateTime" />
+            <Field Type="Note" DisplayName="ResolutionNotes" Name="ResolutionNotes" RichText="FALSE" />
+            <Field Type="Currency" DisplayName="EstimatedCost" Name="EstimatedCost" LCID="1033" Decimals="2" />
+            <Field Type="Text" DisplayName="AssetID" Name="AssetID" />
+            <Field Type="Lookup" DisplayName="DuplicateOf" Name="DuplicateOf" List="FieldIssues" ShowField="Title" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Assets" TemplateType="100" Url="Lists/Assets" OnQuickLaunch="true">
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="AssetID" Name="AssetID" Required="TRUE" Indexed="TRUE" />
+            <Field Type="Choice" DisplayName="AssetType" Name="AssetType" Required="TRUE"><CHOICES><CHOICE>Road Sign</CHOICE><CHOICE>Water System</CHOICE><CHOICE>Park Asset</CHOICE><CHOICE>Building</CHOICE><CHOICE>Facility</CHOICE></CHOICES></Field>
+            <Field Type="Note" DisplayName="Description" Name="Description" RichText="FALSE" />
+            <Field Type="Choice" DisplayName="County" Name="County" Required="TRUE"><CHOICES><CHOICE>Multnomah</CHOICE><CHOICE>Washington</CHOICE><CHOICE>Clackamas</CHOICE><CHOICE>Marion</CHOICE><CHOICE>Lane</CHOICE><CHOICE>Deschutes</CHOICE></CHOICES></Field>
+            <Field Type="Text" DisplayName="City" Name="City" Required="TRUE" />
+            <Field Type="Number" DisplayName="Latitude" Name="Latitude" Required="TRUE" Decimals="6" />
+            <Field Type="Number" DisplayName="Longitude" Name="Longitude" Required="TRUE" Decimals="6" />
+            <Field Type="DateTime" DisplayName="InstallDate" Name="InstallDate" Format="DateOnly" />
+            <Field Type="DateTime" DisplayName="LastInspection" Name="LastInspection" Format="DateOnly" />
+            <Field Type="Choice" DisplayName="OwningAgency" Name="OwningAgency" Required="TRUE"><CHOICES><CHOICE>ODOT</CHOICE><CHOICE>Parks &amp; Rec</CHOICE><CHOICE>Public Works</CHOICE><CHOICE>Facilities Mgmt</CHOICE><CHOICE>Water Bureau</CHOICE></CHOICES></Field>
+          </pnp:Fields>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="IssueAuditLog" TemplateType="100" Url="Lists/IssueAuditLog" OnQuickLaunch="true">
+          <pnp:Fields>
+            <Field Type="Lookup" DisplayName="IssueID" Name="IssueID" List="FieldIssues" ShowField="IssueID" Required="TRUE" />
+            <Field Type="Text" DisplayName="Action" Name="Action" Required="TRUE" />
+            <Field Type="User" DisplayName="PerformedBy" Name="PerformedBy" UserSelectionMode="PeopleOnly" />
+            <Field Type="DateTime" DisplayName="Timestamp" Name="Timestamp" Required="TRUE" Format="DateTime" />
+            <Field Type="Note" DisplayName="Details" Name="Details" RichText="FALSE" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

@@ -1,0 +1,8 @@
+{
+  "appName": "Field Inspection",
+  "description": "Mobile-first Power Apps canvas app for reporting field issues with camera, GPS, offline queueing, and SharePoint submission.",
+  "minimumPowerAppsRelease": "3.24092",
+  "dataSources": ["FieldIssues", "Assets", "IssueAuditLog"],
+  "orientation": "portrait",
+  "format": "phone"
+}

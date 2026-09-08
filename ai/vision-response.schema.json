@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FieldIssueVisionResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["issueType", "detectedConditions", "severity", "recommendedPriority", "recommendedAction", "confidence", "publicSafetyRisk", "estimatedCost", "reasoning"],
+  "properties": {
+    "issueType": { "type": "string", "enum": ["Road Sign", "Water Leak", "Park Maintenance", "Building Inspection", "Facilities"] },
+    "detectedConditions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "severity": { "type": "string", "enum": ["Critical", "High", "Medium", "Low"] },
+    "recommendedPriority": { "type": "string", "enum": ["P1", "P2", "P3", "P4"] },
+    "recommendedAction": { "type": "string", "minLength": 10 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
+    "publicSafetyRisk": { "type": "boolean" },
+    "estimatedCost": { "type": "number", "minimum": 0 },
+    "reasoning": { "type": "string", "minLength": 10 }
+  }
+}
