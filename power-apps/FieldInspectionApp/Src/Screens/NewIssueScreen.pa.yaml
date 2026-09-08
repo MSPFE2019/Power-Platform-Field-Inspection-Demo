@@ -66,7 +66,7 @@ NewIssueScreen:
             Longitude: Round(Location.Longitude, 6),
             LocationAddress: varAddress,
             County: ddCounty.Selected.Value,
-            City: If(ddCounty.Selected.Value = "Multnomah", "Portland", "Unknown"),
+            City: If(ddCounty.Selected.Value = "North County", "Metro City", "Unknown"),
             Agency: ddAgency.Selected.Value,
             ReportedDate: Now(),
             Severity: "Medium",
@@ -89,3 +89,4 @@ NewIssueScreen:
           Notify("Offline: report saved locally and will sync when connected.", NotificationType.Warning);
           Navigate(ConfirmationScreen, ScreenTransition.Cover)
         )
+

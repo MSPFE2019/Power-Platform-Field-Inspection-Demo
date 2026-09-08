@@ -14,7 +14,7 @@ function Ensure-FieldXml { param([string]$List,[string]$InternalName,[string]$Xm
 function ChoiceXml($name,$display,$choices,$required='FALSE'){ $choiceXml=($choices|ForEach-Object{"<CHOICE>$_</CHOICE>"}) -join ''; "<Field Type='Choice' DisplayName='$display' Name='$name' StaticName='$name' Required='$required' Format='Dropdown'><CHOICES>$choiceXml</CHOICES></Field>" }
 
 $issueTypes=@('Road Sign','Water Leak','Park Maintenance','Building Inspection','Facilities')
-$counties=@('Multnomah','Washington','Clackamas','Marion','Lane','Deschutes')
+$counties=@('North County','West County','South County','Central County','River County','Mountain County')
 $agencies=@('ODOT','Parks & Rec','Public Works','Facilities Mgmt','Water Bureau')
 $severities=@('Critical','High','Medium','Low')
 $priorities=@('P1','P2','P3','P4')
@@ -70,3 +70,4 @@ Ensure-FieldXml 'IssueAuditLog' 'PerformedBy' "<Field Type='User' DisplayName='P
 Ensure-FieldXml 'IssueAuditLog' 'Timestamp' "<Field Type='DateTime' DisplayName='Timestamp' Name='Timestamp' StaticName='Timestamp' Required='TRUE' Format='DateTime' />"
 Ensure-FieldXml 'IssueAuditLog' 'Details' "<Field Type='Note' DisplayName='Details' Name='Details' StaticName='Details' NumLines='8' RichText='FALSE' />"
 Write-Host 'Provisioning complete.'
+

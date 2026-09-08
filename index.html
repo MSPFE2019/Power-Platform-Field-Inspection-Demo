@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Field Inspection Demo Kit Markdown Explorer</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    a {
+      color: var(--cp-link);
+    }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    }
+    .sidebar {
+      border-right: 1px solid var(--cp-border);
+      background: var(--cp-bg-elevated);
+      padding: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+    .brand {
+      margin-bottom: 24px;
+    }
+    .brand h1 {
+      font-size: 1.25rem;
+      margin: 0 0 8px;
+    }
+    .brand p {
+      margin: 0;
+      color: var(--cp-text-muted);
+      line-height: 1.4;
+    }
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    input[type="search"],
+    select {
+      width: 100%;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+    input[type="file"] {
+      width: 100%;
+      color: var(--cp-text-muted);
+      font: inherit;
+    }
+    button {
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 10px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover,
+    .file-button:hover {
+      border-color: var(--cp-border-strong);
+    }
+    .primary {
+      background: var(--cp-accent);
+      border-color: var(--cp-accent);
+      color: var(--cp-accent-fg);
+    }
+    .primary:hover {
+      background: var(--cp-accent-hover);
+      border-color: var(--cp-accent-hover);
+    }
+    .file-list {
+      display: grid;
+      gap: 8px;
+    }
+    .file-button {
+      text-align: left;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      padding: 10px 12px;
+    }
+    .file-button.active {
+      border-color: var(--cp-accent);
+      background: var(--cp-accent-soft);
+    }
+    .file-name {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .file-path {
+      display: block;
+      color: var(--cp-text-muted);
+      font-size: 0.82rem;
+      overflow-wrap: anywhere;
+    }
+    main {
+      padding: 32px;
+      min-width: 0;
+    }
+    .toolbar,
+    .viewer {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .toolbar h2 {
+      font-size: 1rem;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .viewer {
+      padding: 28px;
+      min-height: 70vh;
+    }
+    .status {
+      color: var(--cp-text-muted);
+      margin: 0 0 16px;
+    }
+    .toc {
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      padding: 12px 16px;
+      margin-bottom: 24px;
+    }
+    .toc strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .toc a {
+      display: block;
+      margin: 4px 0;
+      text-decoration: none;
+    }
+    .markdown {
+      line-height: 1.58;
+    }
+    .markdown h1,
+    .markdown h2,
+    .markdown h3 {
+      line-height: 1.2;
+      margin-top: 1.4em;
+      margin-bottom: 0.55em;
+    }
+    .markdown h1:first-child,
+    .markdown h2:first-child,
+    .markdown h3:first-child {
+      margin-top: 0;
+    }
+    .markdown p,
+    .markdown ul,
+    .markdown ol,
+    .markdown table,
+    .markdown pre {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    .markdown code,
+    .source {
+      font-family: Consolas, "Courier New", Courier, monospace;
+    }
+    .markdown :not(pre) > code {
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 1px 5px;
+    }
+    .markdown pre,
+    .source {
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 16px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+    .markdown table {
+      border-collapse: collapse;
+      width: 100%;
+      display: block;
+      overflow: auto;
+    }
+    .markdown th,
+    .markdown td {
+      border: 1px solid var(--cp-border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .markdown th {
+      background: var(--cp-surface-soft);
+    }
+    mark {
+      background: var(--cp-highlight);
+      color: var(--cp-text);
+      border-radius: 0.625rem;
+      padding: 0 2px;
+    }
+    .empty {
+      border: 1px dashed var(--cp-border-strong);
+      border-radius: 16px;
+      padding: 24px;
+      color: var(--cp-text-muted);
+      background: var(--cp-surface-soft);
+    }
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--cp-border);
+      }
+      main {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>Markdown Explorer</h1>
+        <p>Browse, search, render, and inspect this demo kit's Markdown documentation.</p>
+      </div>
+      <div class="controls">
+        <input id="search" type="search" placeholder="Search file names and loaded content" aria-label="Search markdown files" />
+        <select id="category" aria-label="Filter by folder">
+          <option value="">All folders</option>
+        </select>
+        <input id="fileInput" type="file" accept=".md,.markdown,text/markdown,text/plain" aria-label="Open local markdown file" />
+      </div>
+      <div id="fileList" class="file-list" aria-label="Markdown files"></div>
+    </aside>
+    <main>
+      <section class="toolbar">
+        <h2 id="currentTitle">Choose a Markdown file</h2>
+        <div class="toolbar-actions">
+          <button id="renderButton" class="primary" type="button">Rendered</button>
+          <button id="sourceButton" type="button">Source</button>
+          <button id="copyButton" type="button">Copy Markdown</button>
+        </div>
+      </section>
+      <section class="viewer">
+        <p id="status" class="status">Select a document from the left, or open a local Markdown file.</p>
+        <nav id="toc" class="toc" hidden></nav>
+        <article id="content" class="markdown">
+          <div class="empty">This page can fetch repository Markdown files when served from a local web server or GitHub Pages. If opened directly from disk, use the file picker to load a Markdown file interactively.</div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script>
+    const markdownFiles = [
+      "README.md",
+      "DEPLOYMENT.md",
+      "ai/ai-builder-prompt.md",
+      "ai/few-shot-examples.md",
+      "ai/test-images/README.md",
+      "ai/vision-system-prompt.md",
+      "copilot-studio/BUILD.md",
+      "copilot-studio/expected-responses.md",
+      "datasource/sharepoint/schema.md",
+      "demo/ARCHITECTURE.md",
+      "demo/DEMO-SCRIPT.md",
+      "demo/FAQ.md",
+      "demo/PRE-DEMO-CHECKLIST.md",
+      "power-apps/FieldInspectionApp/PACK.md",
+      "power-apps/README.md",
+      "power-automate/AnalyzeFieldIssue/README.md",
+      "power-automate/CriticalIssueEscalation/README.md",
+      "power-automate/DailyDigest/README.md",
+      "power-automate/QueryIssues/README.md",
+      "power-automate/RequestApproval/README.md",
+      "power-automate/connections.md",
+      "power-bi/Model-DAX.md",
+      "power-bi/REPORT-SPEC.md"
+    ];
+
+    const state = {
+      activePath: "",
+      markdown: "",
+      mode: "rendered",
+      cache: new Map()
+    };
+
+    const fileList = document.getElementById("fileList");
+    const category = document.getElementById("category");
+    const search = document.getElementById("search");
+    const currentTitle = document.getElementById("currentTitle");
+    const status = document.getElementById("status");
+    const content = document.getElementById("content");
+    const toc = document.getElementById("toc");
+    const renderButton = document.getElementById("renderButton");
+    const sourceButton = document.getElementById("sourceButton");
+    const copyButton = document.getElementById("copyButton");
+    const fileInput = document.getElementById("fileInput");
+
+    const escapeHtml = (value) =>
+      value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    const slugify = (value) =>
+      value.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-") || "section";
+
+    const inlineMarkdown = (value) => {
+      let html = escapeHtml(value);
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+      return html;
+    };
+
+    const renderMarkdown = (markdown, query = "") => {
+      const lines = markdown.split(/\r?\n/);
+      const out = [];
+      const headings = [];
+      let inCode = false;
+      let code = [];
+      let listType = "";
+      let table = [];
+
+      const flushList = () => {
+        if (listType) {
+          out.push(`</${listType}>`);
+          listType = "";
+        }
+      };
+      const flushTable = () => {
+        if (!table.length) return;
+        out.push("<table>");
+        table.forEach((row, index) => {
+          const cells = row.split("|").slice(1, -1).map((cell) => cell.trim());
+          if (index === 1 && cells.every((cell) => /^:?-{3,}:?$/.test(cell))) return;
+          const tag = index === 0 ? "th" : "td";
+          out.push(`<tr>${cells.map((cell) => `<${tag}>${inlineMarkdown(cell)}</${tag}>`).join("")}</tr>`);
+        });
+        out.push("</table>");
+        table = [];
+      };
+
+      for (const line of lines) {
+        if (line.startsWith("```")) {
+          flushList();
+          flushTable();
+          if (inCode) {
+            out.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+            code = [];
+            inCode = false;
+          } else {
+            inCode = true;
+          }
+          continue;
+        }
+        if (inCode) {
+          code.push(line);
+          continue;
+        }
+        if (/^\|.+\|$/.test(line.trim())) {
+          flushList();
+          table.push(line.trim());
+          continue;
+        }
+        flushTable();
+        const heading = /^(#{1,3})\s+(.+)$/.exec(line);
+        if (heading) {
+          flushList();
+          const level = heading[1].length;
+          const text = heading[2].trim();
+          const id = slugify(text);
+          headings.push({ level, text, id });
+          out.push(`<h${level} id="${id}">${inlineMarkdown(text)}</h${level}>`);
+          continue;
+        }
+        const bullet = /^\s*[-*]\s+(.+)$/.exec(line);
+        if (bullet) {
+          if (listType !== "ul") {
+            flushList();
+            out.push("<ul>");
+            listType = "ul";
+          }
+          out.push(`<li>${inlineMarkdown(bullet[1])}</li>`);
+          continue;
+        }
+        const ordered = /^\s*\d+\.\s+(.+)$/.exec(line);
+        if (ordered) {
+          if (listType !== "ol") {
+            flushList();
+            out.push("<ol>");
+            listType = "ol";
+          }
+          out.push(`<li>${inlineMarkdown(ordered[1])}</li>`);
+          continue;
+        }
+        if (!line.trim()) {
+          flushList();
+          continue;
+        }
+        flushList();
+        out.push(`<p>${inlineMarkdown(line)}</p>`);
+      }
+      flushList();
+      flushTable();
+
+      let html = out.join("\n");
+      if (query) {
+        const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        html = html.replace(new RegExp(`(${safeQuery})`, "gi"), "<mark>$1</mark>");
+      }
+      return { html, headings };
+    };
+
+    const populateCategories = () => {
+      const folders = [...new Set(markdownFiles.map((path) => path.includes("/") ? path.split("/")[0] : "root"))].sort();
+      for (const folder of folders) {
+        const option = document.createElement("option");
+        option.value = folder;
+        option.textContent = folder;
+        category.append(option);
+      }
+    };
+
+    const filteredFiles = () => {
+      const q = search.value.trim().toLowerCase();
+      const folder = category.value;
+      return markdownFiles.filter((path) => {
+        const top = path.includes("/") ? path.split("/")[0] : "root";
+        const cached = state.cache.get(path) || "";
+        return (!folder || top === folder) && (!q || path.toLowerCase().includes(q) || cached.toLowerCase().includes(q));
+      });
+    };
+
+    const renderFileList = () => {
+      fileList.innerHTML = "";
+      for (const path of filteredFiles()) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `file-button${path === state.activePath ? " active" : ""}`;
+        button.innerHTML = `<span class="file-name">${escapeHtml(path.split("/").pop())}</span><span class="file-path">${escapeHtml(path)}</span>`;
+        button.addEventListener("click", () => loadMarkdown(path));
+        fileList.append(button);
+      }
+      if (!fileList.children.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No Markdown files match the current filters.";
+        fileList.append(empty);
+      }
+    };
+
+    const renderToc = (headings) => {
+      toc.innerHTML = "";
+      if (!headings.length || state.mode === "source") {
+        toc.hidden = true;
+        return;
+      }
+      toc.hidden = false;
+      const title = document.createElement("strong");
+      title.textContent = "On this page";
+      toc.append(title);
+      for (const heading of headings) {
+        const link = document.createElement("a");
+        link.href = `#${heading.id}`;
+        link.textContent = heading.text;
+        link.style.marginLeft = `${(heading.level - 1) * 12}px`;
+        toc.append(link);
+      }
+    };
+
+    const renderContent = () => {
+      currentTitle.textContent = state.activePath || "Choose a Markdown file";
+      renderButton.classList.toggle("primary", state.mode === "rendered");
+      sourceButton.classList.toggle("primary", state.mode === "source");
+      if (!state.markdown) return;
+      if (state.mode === "source") {
+        toc.hidden = true;
+        content.className = "source";
+        content.textContent = state.markdown;
+      } else {
+        content.className = "markdown";
+        const rendered = renderMarkdown(state.markdown, search.value.trim());
+        content.innerHTML = rendered.html;
+        renderToc(rendered.headings);
+      }
+      renderFileList();
+    };
+
+    async function loadMarkdown(path) {
+      state.activePath = path;
+      status.textContent = `Loading ${path}...`;
+      try {
+        let markdown = state.cache.get(path);
+        if (!markdown) {
+          const response = await fetch(path);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          markdown = await response.text();
+          state.cache.set(path, markdown);
+        }
+        state.markdown = markdown;
+        status.textContent = `Loaded ${path}.`;
+        history.replaceState(null, "", `#${encodeURIComponent(path)}`);
+        renderContent();
+      } catch (error) {
+        status.textContent = `Could not fetch ${path}. Serve the repo with a local web server or use the file picker.`;
+        content.className = "markdown";
+        content.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+        toc.hidden = true;
+      }
+    }
+
+    renderButton.addEventListener("click", () => {
+      state.mode = "rendered";
+      renderContent();
+    });
+    sourceButton.addEventListener("click", () => {
+      state.mode = "source";
+      renderContent();
+    });
+    copyButton.addEventListener("click", async () => {
+      if (!state.markdown) return;
+      await navigator.clipboard.writeText(state.markdown);
+      status.textContent = "Markdown copied to clipboard.";
+    });
+    search.addEventListener("input", () => {
+      renderFileList();
+      if (state.markdown && state.mode === "rendered") renderContent();
+    });
+    category.addEventListener("change", renderFileList);
+    fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      state.activePath = file.name;
+      state.markdown = await file.text();
+      state.cache.set(file.name, state.markdown);
+      status.textContent = `Loaded local file ${file.name}.`;
+      renderContent();
+    });
+
+    populateCategories();
+    renderFileList();
+    const initial = decodeURIComponent(location.hash.slice(1));
+    loadMarkdown(markdownFiles.includes(initial) ? initial : "README.md");
+  </script>
+</body>
+</html>

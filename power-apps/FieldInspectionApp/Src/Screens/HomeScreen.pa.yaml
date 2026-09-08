@@ -14,7 +14,7 @@ HomeScreen:
       FontWeight: |
         =FontWeight.Semibold
       AccessibleLabel: |
-        ="Oregon Field Inspection home"
+        ="Field Inspection home"
     MyReportsCountLabel:
       Text: |
         ="My open reports: " & Text(varMyReportsCount)
@@ -36,3 +36,4 @@ HomeScreen:
         ="My reports"
       OnSelect: |
         =Refresh(FieldIssues); Navigate(MyReportsScreen, ScreenTransition.Fade)
+

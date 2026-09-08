@@ -1,6 +1,6 @@
 # Power Platform Field Inspection Demo Kit
 
-A complete executive-facing demo kit for modernizing Oregon multi-county field issue intake with Power Apps, AI vision, Power Automate, Copilot Studio, SharePoint, and Power BI.
+A complete executive-facing demo kit for modernizing multi-county field issue intake with Power Apps, AI vision, Power Automate, Copilot Studio, SharePoint, and Power BI.
 
 ## Six-stage demo flow
 
@@ -8,7 +8,7 @@ A complete executive-facing demo kit for modernizing Oregon multi-county field i
 2. AI vision analyzes the photo and returns severity, conditions, recommended action, priority, confidence, and estimated cost.
 3. Power Automate routes approval and assignment to the owning agency.
 4. Critical public-safety issues escalate immediately to Teams and on-call channels.
-5. Oregon Facilities Assistant answers operational questions over the governed SharePoint data.
+5. Facilities Assistant answers operational questions over the governed SharePoint data.
 6. Power BI shows executive trends, recurrence, SLA, map, agency, and cost views.
 
 ## Architecture
@@ -34,9 +34,10 @@ flowchart LR
 | `/power-apps` | Reviewable canvas app source and packing/import instructions |
 | `/ai` | AI Builder and Azure OpenAI/Copilot vision prompts, schema, examples |
 | `/power-automate` | Solution-ready flow definitions and build guides |
-| `/copilot-studio` | Oregon Facilities Assistant config, topics, expected responses |
+| `/copilot-studio` | Facilities Assistant config, topics, expected responses |
 | `/power-bi` | Power Query, DAX measures, TMDL stub, report build spec |
 | `/demo` | Run-of-show, checklist, reset script, FAQ, architecture |
+| `/index.html` | Interactive Markdown explorer for browsing and searching this kit's documentation |
 
 ## Deployment guide
 
@@ -50,3 +51,7 @@ flowchart LR
 8. Demo rehearsal (20 min): follow `/demo/DEMO-SCRIPT.md` and reset with `/demo/Reset-DemoData.ps1`.
 
 See `DEPLOYMENT.md` for tenant setup, licensing, placeholders, and troubleshooting.
+
+## Documentation explorer
+
+Open `index.html` through a local web server or GitHub Pages to browse, render, search, and copy the Markdown files in this repo. If opened directly from disk, use the page's file picker to load Markdown files interactively.

@@ -14,9 +14,10 @@ flowchart LR
   F --> G[Teams approval]
   B --> H[CriticalIssueEscalation flow]
   H --> I[Teams channel + on-call email/SMS]
-  B --> J[Copilot Studio Oregon Facilities Assistant]
+  B --> J[Copilot Studio Facilities Assistant]
   J --> K[QueryIssues child flow]
   B --> L[Power BI dashboard]
   M[Assets list] --> J
   M --> L
 ```
+

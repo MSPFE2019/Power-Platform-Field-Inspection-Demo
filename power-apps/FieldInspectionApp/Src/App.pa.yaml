@@ -1,14 +1,15 @@
 App:
   OnStart: |
-    Set(varAppName, "Oregon Field Inspection");
+    Set(varAppName, "Field Inspection");
     Set(varBrandColor, ColorValue("#12436D"));
     Set(varAccentColor, ColorValue("#2E7D32"));
     LoadData(colOfflineIssues, "offlineIssues", true);
     If(IsBlank(colOfflineIssues), ClearCollect(colOfflineIssues, []));
     ClearCollect(colIssueTypes, ["Road Sign", "Water Leak", "Park Maintenance", "Building Inspection", "Facilities"]);
-    ClearCollect(colCounties, ["Multnomah", "Washington", "Clackamas", "Marion", "Lane", "Deschutes"]);
+    ClearCollect(colCounties, ["North County", "West County", "South County", "Central County", "River County", "Mountain County"]);
     ClearCollect(colAgencies, ["ODOT", "Parks & Rec", "Public Works", "Facilities Mgmt", "Water Bureau"]);
     Set(varCurrentUser, User());
     Set(varMyReportsCount, CountRows(Filter(FieldIssues, ReportedBy.Email = varCurrentUser.Email && Status <> "Resolved")))
   StartScreen: HomeScreen
   ConfirmExit: false
+

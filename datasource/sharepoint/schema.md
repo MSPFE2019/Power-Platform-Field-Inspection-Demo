@@ -15,8 +15,8 @@ Create these lists in the target site before importing sample data. Internal nam
 | Latitude | Latitude | Number | Yes | 6 decimal places |
 | Longitude | Longitude | Number | Yes | 6 decimal places |
 | LocationAddress | LocationAddress | Single line text | No | Reverse-geocoded address |
-| County | County | Choice | Yes | Multnomah; Washington; Clackamas; Marion; Lane; Deschutes |
-| City | City | Single line text | Yes | Oregon city |
+| County | County | Choice | Yes | North County; West County; South County; Central County; River County; Mountain County |
+| City | City | Single line text | Yes | city |
 | Agency | Agency | Choice | Yes | ODOT; Parks & Rec; Public Works; Facilities Mgmt; Water Bureau |
 | ReportedBy | ReportedBy | Person | No | Reporter |
 | ReportedDate | ReportedDate | DateTime | Yes | Date/time report was submitted |
@@ -44,7 +44,7 @@ Create these lists in the target site before importing sample data. Internal nam
 | AssetType | AssetType | Choice | Yes | Road Sign; Water System; Park Asset; Building; Facility |
 | Description | Description | Multiple lines text | No | Asset description |
 | County | County | Choice | Yes | Same county choices as FieldIssues |
-| City | City | Single line text | Yes | Oregon city |
+| City | City | Single line text | Yes | city |
 | Latitude | Latitude | Number | Yes | 6 decimal places |
 | Longitude | Longitude | Number | Yes | 6 decimal places |
 | InstallDate | InstallDate | DateTime | No | Install date |
@@ -61,3 +61,4 @@ Create these lists in the target site before importing sample data. Internal nam
 | PerformedBy | PerformedBy | Person | No | Actor/service account |
 | Timestamp | Timestamp | DateTime | Yes | Audit timestamp |
 | Details | Details | Multiple lines text | No | JSON/text details |
+

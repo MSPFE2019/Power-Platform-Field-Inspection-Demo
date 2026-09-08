@@ -38,11 +38,11 @@ Talk track: "Critical public safety issues bypass the normal queue so leadership
 
 Value driver: Power Automate Consumption, Teams engagement.
 
-If it breaks: Use seeded critical Portland items FI-00001 to FI-00004 and show the escalation flow definition.
+If it breaks: Use seeded critical Metro City items FI-00001 to FI-00004 and show the escalation flow definition.
 
-## 5. Oregon Facilities Assistant (3 min)
+## 5. Facilities Assistant (3 min)
 
-Click path: Copilot Studio test pane > ask: "Show all critical issues in Portland." > ask recurring/sign demo questions.
+Click path: Copilot Studio test pane > ask: "Show all critical issues in Metro City." > ask recurring/sign demo questions.
 
 Talk track: "Leaders and staff can ask operational questions in natural language, grounded in the same governed data source."
 
@@ -59,3 +59,4 @@ Talk track: "The same operational data becomes an executive dashboard that expos
 Value driver: Power BI, Copilot Usage.
 
 If it breaks: Use the report spec and CSV files in Power BI Desktop Import Text/CSV mode.
+

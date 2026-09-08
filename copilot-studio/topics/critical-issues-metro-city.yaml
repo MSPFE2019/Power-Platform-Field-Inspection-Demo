@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+beginDialog:
+  triggers:
+    - kind: OnRecognizedIntent
+      intent:
+        displayName: Show critical issues in Metro City
+        triggerQueries:
+          - Show all critical issues in Metro City.
+          - Critical Metro City issues
+  actions:
+    - kind: InvokeFlowAction
+      flowDisplayName: QueryIssues
+      input:
+        queryType: criticalInMetroCity
+        city: Metro City
+      outputVariable: Topic.Results
+    - kind: SendActivity
+      activity: "Critical open Metro City issues use filter City = Metro City, Severity = Critical, Status not in Resolved/Rejected. Sample seeded result: FI-00001, FI-00002, FI-00003, FI-00004 near Metro City sign assets."
+

@@ -1,6 +1,6 @@
-name: Oregon Facilities Assistant
-description: Answers Oregon field maintenance questions, checks issue status, creates issues, and escalates critical risks using SharePoint FieldIssues and Assets data.
-greeting: Hello, I can help with Oregon field issues, maintenance trends, asset recurrence, and escalations. Ask about critical issues, recurring locations, sign reports, or a specific IssueID.
+name: Facilities Assistant
+description: Answers field maintenance questions, checks issue status, creates issues, and escalates critical risks using SharePoint FieldIssues and Assets data.
+greeting: Hello, I can help with field issues, maintenance trends, asset recurrence, and escalations. Ask about critical issues, recurring locations, sign reports, or a specific IssueID.
 instructions: |
   Use the SharePoint FieldIssues and Assets knowledge source for grounding. For deterministic operational answers, call the QueryIssues Power Automate action. Always cite the filter used in concise natural language. Do not expose internal connector details. If a result set is empty, say no matching issues were found and suggest checking county, city, or date filters.
 actions:
@@ -14,10 +14,12 @@ knowledgeSources:
       - FieldIssues
       - Assets
 topics:
-  - topics/critical-issues-portland.yaml
+  - topics/critical-issues-metro-city.yaml
   - topics/recurring-maintenance.yaml
   - topics/signs-more-than-twice.yaml
   - topics/status-lookup.yaml
   - topics/create-new-issue.yaml
   - topics/escalate-issue.yaml
   - topics/avg-resolution-time.yaml
+
+
