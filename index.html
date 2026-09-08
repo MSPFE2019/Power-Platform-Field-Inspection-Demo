@@ -173,6 +173,71 @@
       padding: 0 10px;
       text-decoration: none;
     }
+    .type-badge {
+      display: inline-block;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      color: var(--cp-text-muted);
+      font-size: 0.72rem;
+      margin-top: 6px;
+      padding: 2px 7px;
+    }
+    .beginner-guide {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+      margin-bottom: 16px;
+      padding: 20px;
+    }
+    .beginner-guide h2 {
+      margin: 0 0 8px;
+    }
+    .beginner-guide p {
+      color: var(--cp-text-muted);
+      margin: 0 0 16px;
+    }
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 20px;
+      padding-left: 22px;
+    }
+    .artifact-groups {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .artifact-card {
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-surface-soft);
+      padding: 14px;
+    }
+    .artifact-card h3 {
+      font-size: 1rem;
+      margin: 0 0 6px;
+    }
+    .artifact-card p {
+      font-size: 0.9rem;
+      margin: 0 0 10px;
+    }
+    .artifact-links {
+      display: grid;
+      gap: 6px;
+    }
+    .artifact-link-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .artifact-link-row button {
+      overflow: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .file-button.active {
       border-color: var(--cp-accent);
       background: var(--cp-accent-soft);
@@ -346,6 +411,17 @@
       <div id="fileList" class="file-list" aria-label="Repository files"></div>
     </aside>
     <main>
+      <section class="beginner-guide" aria-labelledby="beginnerTitle">
+        <h2 id="beginnerTitle">Beginner guide: start here</h2>
+        <p>Use these links in order if you are new to this repo. Preview opens a file in this page; Open launches the raw artifact in a new tab.</p>
+        <ol class="steps">
+          <li>Read <a href="README.md">README.md</a> for the purpose and repo map.</li>
+          <li>Read <a href="DEPLOYMENT.md">DEPLOYMENT.md</a> for prerequisites, tokens, and deployment order.</li>
+          <li>Run the PowerShell scripts in order: provision SharePoint, import sample data, then reset data before each demo.</li>
+          <li>Use the grouped artifact links below to find Markdown guides, scripts, app source, flow definitions, Copilot Studio topics, and Power BI assets.</li>
+        </ol>
+        <div id="artifactGroups" class="artifact-groups" aria-label="Grouped artifact links"></div>
+      </section>
       <section class="toolbar">
         <h2 id="currentTitle">Choose a repository file</h2>
         <div class="toolbar-actions">
@@ -441,9 +517,51 @@
     const sourceButton = document.getElementById("sourceButton");
     const copyButton = document.getElementById("copyButton");
     const fileInput = document.getElementById("fileInput");
+    const artifactGroups = document.getElementById("artifactGroups");
+
+    const groupDefinitions = [
+      { key: "markdown", title: "Markdown guides", description: "Human-readable setup, deployment, demo, FAQ, schema, and report instructions." },
+      { key: "powershell", title: "PowerShell scripts", description: "Run these with PowerShell and PnP.PowerShell to provision, import, or reset data." },
+      { key: "data", title: "Sample data", description: "CSV seed data for assets and field issues." },
+      { key: "sharepoint", title: "SharePoint template", description: "PnP XML and schema assets for the data layer." },
+      { key: "powerapps", title: "Power Apps source", description: "Canvas app source, pack instructions, and screen formulas." },
+      { key: "flows", title: "Power Automate flows", description: "Flow definition JSON files and connection/build notes." },
+      { key: "copilot", title: "Copilot Studio agent", description: "Agent configuration and topic YAML." },
+      { key: "powerbi", title: "Power BI artifacts", description: "DAX, Power Query, TMDL, and report specification." },
+      { key: "ai", title: "AI vision artifacts", description: "AI Builder and Azure OpenAI prompts, JSON schema, and examples." },
+      { key: "repo", title: "Repo housekeeping", description: "License, gitignore, and this HTML explorer." }
+    ];
 
     const escapeHtml = (value) =>
       value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    const classifyFile = (path) => {
+      if (path.endsWith(".md")) return "markdown";
+      if (path.endsWith(".ps1")) return "powershell";
+      if (path.endsWith(".csv")) return "data";
+      if (path.startsWith("datasource/sharepoint/")) return "sharepoint";
+      if (path.startsWith("power-apps/")) return "powerapps";
+      if (path.startsWith("power-automate/")) return "flows";
+      if (path.startsWith("copilot-studio/")) return "copilot";
+      if (path.startsWith("power-bi/")) return "powerbi";
+      if (path.startsWith("ai/")) return "ai";
+      return "repo";
+    };
+
+    const typeLabel = (path) => {
+      const ext = path.includes(".") ? path.split(".").pop().toUpperCase() : "FILE";
+      if (path.endsWith(".md")) return "Markdown";
+      if (path.endsWith(".ps1")) return "PowerShell";
+      if (path.endsWith(".pa.yaml")) return "Power Apps YAML";
+      if (path.endsWith(".yaml")) return "YAML";
+      if (path.endsWith(".json")) return "JSON";
+      if (path.endsWith(".csv")) return "CSV";
+      if (path.endsWith(".xml")) return "PnP XML";
+      if (path.endsWith(".m")) return "Power Query";
+      if (path.endsWith(".tmdl")) return "TMDL";
+      if (path.endsWith(".html")) return "HTML";
+      return ext;
+    };
 
     const slugify = (value) =>
       value.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-") || "section";
@@ -584,7 +702,7 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = `file-button${path === state.activePath ? " active" : ""}`;
-        button.innerHTML = `<span class="file-name">${escapeHtml(path.split("/").pop())}</span><span class="file-path">${escapeHtml(path)}</span>`;
+        button.innerHTML = `<span class="file-name">${escapeHtml(path.split("/").pop())}</span><span class="file-path">${escapeHtml(path)}</span><span class="type-badge">${escapeHtml(typeLabel(path))}</span>`;
         button.addEventListener("click", () => loadFile(path));
         button.title = `Preview ${path}`;
         const link = document.createElement("a");
@@ -602,6 +720,27 @@
         empty.className = "empty";
         empty.textContent = "No repository files match the current filters.";
         fileList.append(empty);
+      }
+    };
+
+    const renderArtifactGroups = () => {
+      artifactGroups.innerHTML = "";
+      for (const group of groupDefinitions) {
+        const files = repoFiles.filter((path) => classifyFile(path) === group.key);
+        if (!files.length) continue;
+        const card = document.createElement("section");
+        card.className = "artifact-card";
+        const links = files.map((path) => `
+          <div class="artifact-link-row">
+            <button type="button" data-preview-path="${escapeHtml(path)}" title="Preview ${escapeHtml(path)}">${escapeHtml(path)}</button>
+            <a class="raw-link" href="${escapeHtml(path)}" target="_blank" rel="noreferrer" title="Open ${escapeHtml(path)}">Open</a>
+          </div>
+        `).join("");
+        card.innerHTML = `<h3>${escapeHtml(group.title)}</h3><p>${escapeHtml(group.description)}</p><div class="artifact-links">${links}</div>`;
+        card.querySelectorAll("button[data-preview-path]").forEach((button) => {
+          button.addEventListener("click", () => loadFile(button.getAttribute("data-preview-path")));
+        });
+        artifactGroups.append(card);
       }
     };
 
@@ -699,6 +838,7 @@
     });
 
     populateCategories();
+    renderArtifactGroups();
     renderFileList();
     const initial = decodeURIComponent(location.hash.slice(1));
     loadFile(repoFiles.includes(initial) ? initial : "README.md");
