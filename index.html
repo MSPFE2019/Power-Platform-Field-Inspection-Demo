@@ -149,12 +149,29 @@
       display: grid;
       gap: 8px;
     }
+    .file-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: stretch;
+    }
     .file-button {
       text-align: left;
       border: 1px solid var(--cp-border);
       border-radius: 0.625rem;
       background: var(--cp-surface);
       padding: 10px 12px;
+    }
+    .raw-link {
+      align-items: center;
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      color: var(--cp-link);
+      display: flex;
+      font-size: 0.82rem;
+      padding: 0 10px;
+      text-decoration: none;
     }
     .file-button.active {
       border-color: var(--cp-accent);
@@ -316,66 +333,99 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <h1>Markdown Explorer</h1>
-        <p>Browse, search, render, and inspect this demo kit's Markdown documentation.</p>
+        <h1>Repo Explorer</h1>
+        <p>Browse, search, render Markdown, inspect source files, and open every tracked artifact in this demo kit.</p>
       </div>
       <div class="controls">
-        <input id="search" type="search" placeholder="Search file names and loaded content" aria-label="Search markdown files" />
+        <input id="search" type="search" placeholder="Search file names and loaded content" aria-label="Search repository files" />
         <select id="category" aria-label="Filter by folder">
           <option value="">All folders</option>
         </select>
-        <input id="fileInput" type="file" accept=".md,.markdown,text/markdown,text/plain" aria-label="Open local markdown file" />
+        <input id="fileInput" type="file" aria-label="Open local text file" />
       </div>
-      <div id="fileList" class="file-list" aria-label="Markdown files"></div>
+      <div id="fileList" class="file-list" aria-label="Repository files"></div>
     </aside>
     <main>
       <section class="toolbar">
-        <h2 id="currentTitle">Choose a Markdown file</h2>
+        <h2 id="currentTitle">Choose a repository file</h2>
         <div class="toolbar-actions">
           <button id="renderButton" class="primary" type="button">Rendered</button>
           <button id="sourceButton" type="button">Source</button>
-          <button id="copyButton" type="button">Copy Markdown</button>
+          <button id="copyButton" type="button">Copy file</button>
         </div>
       </section>
       <section class="viewer">
-        <p id="status" class="status">Select a document from the left, or open a local Markdown file.</p>
+        <p id="status" class="status">Select a file from the left, or open a local text file.</p>
         <nav id="toc" class="toc" hidden></nav>
         <article id="content" class="markdown">
-          <div class="empty">This page can fetch repository Markdown files when served from a local web server or GitHub Pages. If opened directly from disk, use the file picker to load a Markdown file interactively.</div>
+          <div class="empty">This page can fetch repository files when served from a local web server or GitHub Pages. If opened directly from disk, use the file picker to load a text file interactively.</div>
         </article>
       </section>
     </main>
   </div>
   <script>
-    const markdownFiles = [
-      "README.md",
+    const repoFiles = [
+      ".gitignore",
       "DEPLOYMENT.md",
+      "LICENSE",
+      "README.md",
       "ai/ai-builder-prompt.md",
+      "ai/examples/sample-responses.json",
       "ai/few-shot-examples.md",
       "ai/test-images/README.md",
+      "ai/vision-response.schema.json",
       "ai/vision-system-prompt.md",
       "copilot-studio/BUILD.md",
+      "copilot-studio/agent.yaml",
       "copilot-studio/expected-responses.md",
+      "copilot-studio/topics/avg-resolution-time.yaml",
+      "copilot-studio/topics/create-new-issue.yaml",
+      "copilot-studio/topics/critical-issues-metro-city.yaml",
+      "copilot-studio/topics/escalate-issue.yaml",
+      "copilot-studio/topics/recurring-maintenance.yaml",
+      "copilot-studio/topics/signs-more-than-twice.yaml",
+      "copilot-studio/topics/status-lookup.yaml",
+      "datasource/sample-data/Assets.csv",
+      "datasource/sample-data/FieldIssues.csv",
+      "datasource/sample-data/Import-SampleData.ps1",
+      "datasource/sharepoint/Provision-Lists.ps1",
+      "datasource/sharepoint/provisioning-template.xml",
       "datasource/sharepoint/schema.md",
       "demo/ARCHITECTURE.md",
       "demo/DEMO-SCRIPT.md",
       "demo/FAQ.md",
       "demo/PRE-DEMO-CHECKLIST.md",
+      "demo/Reset-DemoData.ps1",
+      "index.html",
+      "power-apps/FieldInspectionApp/CanvasManifest.json",
       "power-apps/FieldInspectionApp/PACK.md",
+      "power-apps/FieldInspectionApp/Src/App.pa.yaml",
+      "power-apps/FieldInspectionApp/Src/Screens/ConfirmationScreen.pa.yaml",
+      "power-apps/FieldInspectionApp/Src/Screens/HomeScreen.pa.yaml",
+      "power-apps/FieldInspectionApp/Src/Screens/IssueDetailScreen.pa.yaml",
+      "power-apps/FieldInspectionApp/Src/Screens/MyReportsScreen.pa.yaml",
+      "power-apps/FieldInspectionApp/Src/Screens/NewIssueScreen.pa.yaml",
       "power-apps/README.md",
       "power-automate/AnalyzeFieldIssue/README.md",
+      "power-automate/AnalyzeFieldIssue/definition.json",
       "power-automate/CriticalIssueEscalation/README.md",
+      "power-automate/CriticalIssueEscalation/definition.json",
       "power-automate/DailyDigest/README.md",
+      "power-automate/DailyDigest/definition.json",
       "power-automate/QueryIssues/README.md",
+      "power-automate/QueryIssues/definition.json",
       "power-automate/RequestApproval/README.md",
+      "power-automate/RequestApproval/definition.json",
       "power-automate/connections.md",
       "power-bi/Model-DAX.md",
-      "power-bi/REPORT-SPEC.md"
+      "power-bi/PowerQuery.m",
+      "power-bi/REPORT-SPEC.md",
+      "power-bi/model.tmdl"
     ];
 
     const state = {
       activePath: "",
-      markdown: "",
+      fileText: "",
       mode: "rendered",
       cache: new Map()
     };
@@ -507,7 +557,7 @@
     };
 
     const populateCategories = () => {
-      const folders = [...new Set(markdownFiles.map((path) => path.includes("/") ? path.split("/")[0] : "root"))].sort();
+      const folders = [...new Set(repoFiles.map((path) => path.includes("/") ? path.split("/")[0] : "root"))].sort();
       for (const folder of folders) {
         const option = document.createElement("option");
         option.value = folder;
@@ -519,7 +569,7 @@
     const filteredFiles = () => {
       const q = search.value.trim().toLowerCase();
       const folder = category.value;
-      return markdownFiles.filter((path) => {
+      return repoFiles.filter((path) => {
         const top = path.includes("/") ? path.split("/")[0] : "root";
         const cached = state.cache.get(path) || "";
         return (!folder || top === folder) && (!q || path.toLowerCase().includes(q) || cached.toLowerCase().includes(q));
@@ -529,17 +579,28 @@
     const renderFileList = () => {
       fileList.innerHTML = "";
       for (const path of filteredFiles()) {
+        const row = document.createElement("div");
+        row.className = "file-row";
         const button = document.createElement("button");
         button.type = "button";
         button.className = `file-button${path === state.activePath ? " active" : ""}`;
         button.innerHTML = `<span class="file-name">${escapeHtml(path.split("/").pop())}</span><span class="file-path">${escapeHtml(path)}</span>`;
-        button.addEventListener("click", () => loadMarkdown(path));
-        fileList.append(button);
+        button.addEventListener("click", () => loadFile(path));
+        button.title = `Preview ${path}`;
+        const link = document.createElement("a");
+        link.className = "raw-link";
+        link.href = path;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        link.textContent = "Open";
+        link.title = `Open ${path}`;
+        row.append(button, link);
+        fileList.append(row);
       }
       if (!fileList.children.length) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "No Markdown files match the current filters.";
+        empty.textContent = "No repository files match the current filters.";
         fileList.append(empty);
       }
     };
@@ -564,35 +625,38 @@
     };
 
     const renderContent = () => {
-      currentTitle.textContent = state.activePath || "Choose a Markdown file";
+      currentTitle.textContent = state.activePath || "Choose a repository file";
       renderButton.classList.toggle("primary", state.mode === "rendered");
       sourceButton.classList.toggle("primary", state.mode === "source");
-      if (!state.markdown) return;
-      if (state.mode === "source") {
+      if (!state.fileText) return;
+      const isMarkdown = /\.(md|markdown)$/i.test(state.activePath);
+      renderButton.disabled = !isMarkdown;
+      if (state.mode === "source" || !isMarkdown) {
         toc.hidden = true;
         content.className = "source";
-        content.textContent = state.markdown;
+        content.textContent = state.fileText;
       } else {
         content.className = "markdown";
-        const rendered = renderMarkdown(state.markdown, search.value.trim());
+        const rendered = renderMarkdown(state.fileText, search.value.trim());
         content.innerHTML = rendered.html;
         renderToc(rendered.headings);
       }
       renderFileList();
     };
 
-    async function loadMarkdown(path) {
+    async function loadFile(path) {
       state.activePath = path;
       status.textContent = `Loading ${path}...`;
       try {
-        let markdown = state.cache.get(path);
-        if (!markdown) {
+        let fileText = state.cache.get(path);
+        if (!fileText) {
           const response = await fetch(path);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          markdown = await response.text();
-          state.cache.set(path, markdown);
+          fileText = await response.text();
+          state.cache.set(path, fileText);
         }
-        state.markdown = markdown;
+        state.fileText = fileText;
+        if (!/\.(md|markdown)$/i.test(path)) state.mode = "source";
         status.textContent = `Loaded ${path}.`;
         history.replaceState(null, "", `#${encodeURIComponent(path)}`);
         renderContent();
@@ -605,6 +669,7 @@
     }
 
     renderButton.addEventListener("click", () => {
+      if (!/\.(md|markdown)$/i.test(state.activePath)) return;
       state.mode = "rendered";
       renderContent();
     });
@@ -613,29 +678,30 @@
       renderContent();
     });
     copyButton.addEventListener("click", async () => {
-      if (!state.markdown) return;
-      await navigator.clipboard.writeText(state.markdown);
-      status.textContent = "Markdown copied to clipboard.";
+      if (!state.fileText) return;
+      await navigator.clipboard.writeText(state.fileText);
+      status.textContent = "File content copied to clipboard.";
     });
     search.addEventListener("input", () => {
       renderFileList();
-      if (state.markdown && state.mode === "rendered") renderContent();
+      if (state.fileText && state.mode === "rendered") renderContent();
     });
     category.addEventListener("change", renderFileList);
     fileInput.addEventListener("change", async (event) => {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       state.activePath = file.name;
-      state.markdown = await file.text();
-      state.cache.set(file.name, state.markdown);
+      state.fileText = await file.text();
+      state.cache.set(file.name, state.fileText);
       status.textContent = `Loaded local file ${file.name}.`;
+      state.mode = /\.(md|markdown)$/i.test(file.name) ? "rendered" : "source";
       renderContent();
     });
 
     populateCategories();
     renderFileList();
     const initial = decodeURIComponent(location.hash.slice(1));
-    loadMarkdown(markdownFiles.includes(initial) ? initial : "README.md");
+    loadFile(repoFiles.includes(initial) ? initial : "README.md");
   </script>
 </body>
 </html>
